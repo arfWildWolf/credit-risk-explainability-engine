@@ -1,6 +1,4 @@
-"use client";
-
-type Attribution = { feature: string; shap_value: number };
+import type { Attribution } from "../src/services/api";
 
 const labels: Record<string, string> = {
   income: "Income",

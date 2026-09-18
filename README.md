@@ -18,7 +18,8 @@ Start the dashboard in a second terminal:
 ```powershell
 cd frontend
 npm install
+$env:NEXT_PUBLIC_API_BASE_URL="http://localhost:8000"
 npm run dev
 ```
 
-The dashboard uses `http://localhost:8000` by default. Set `NEXT_PUBLIC_API_URL` to point it at another API origin. The model adapter trains a deterministic fallback classifier when no persisted Joblib model exists; replace that adapter's model path for a production-trained model.
+On Vercel, leave `NEXT_PUBLIC_API_BASE_URL` undefined so requests use the same-origin `/api/v1/predict` route. The model adapter trains a deterministic fallback classifier when no persisted Joblib model exists; replace that adapter's model path for a production-trained model.

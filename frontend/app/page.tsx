@@ -2,13 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { ShapWaterfallChart } from "../components/ShapWaterfallChart";
+import { predictCreditRisk, type CreditRiskResult } from "../src/services/api";
 
 type FormData = { income: string; credit_score: string; debt_to_income: string; credit_utilization: string; delinquencies_2yrs: string; loan_amount: string };
-type Result = { default_probability: number; risk_band: string; base_value: number; attributions: { feature: string; shap_value: number }[]; adverse_reasons: string[] };
+type Result = CreditRiskResult;
 
 const initialForm: FormData = { income: "85000", credit_score: "720", debt_to_income: "0.28", credit_utilization: "0.32", delinquencies_2yrs: "0", loan_amount: "18000" };
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
 export default function Home() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [result, setResult] = useState<Result | null>(null);
@@ -20,9 +19,8 @@ export default function Home() {
   async function submit(event: FormEvent) {
     event.preventDefault(); setLoading(true); setError("");
     try {
-      const response = await fetch(`${apiUrl}/api/v1/predict`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(Object.entries(form).map(([key, value]) => [key, Number(value)]))) });
-      if (!response.ok) throw new Error("The risk service could not score this borrower.");
-      setResult(await response.json());
+      const payload = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, Number(value)]));
+      setResult(await predictCreditRisk(payload as Parameters<typeof predictCreditRisk>[0]));
     } catch (requestError) { setError(requestError instanceof Error ? requestError.message : "Something went wrong."); }
     finally { setLoading(false); }
   }

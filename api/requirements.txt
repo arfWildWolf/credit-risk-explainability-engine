@@ -1,0 +1,9 @@
+fastapi
+mangum
+pydantic
+pydantic-settings
+xgboost
+shap
+scikit-learn
+numpy
+joblib
